@@ -34,12 +34,14 @@ Compared with the [RFPE approach](https://github.com/signaloid/Signaloid-Demo-Qu
 ## Usage
 ```
 [-s <K> <sample1> <sample2> ... <sampleK> <sampleWeight1> <sampleWeight2> ... <sampleWeightK>] K in [1, 100000]
-[-i [path_to_input_csv_file : str] (Default: '../inputs/input.csv')] (Default: stdin)
-[-o [path_to_output_csv_file : str] (Default: './sd0/aqpeOutput.csv')] (Default: stdout)
+[-i [path_to_input_csv_file : str] (Default: 'input.csv')]
+[-o [path_to_output_csv_file : str] (Default: './sd0/aqpeOutput.csv')]
 [-t <target_phase : double in [-pi, pi]>] (Default: pi / 2)
-[-p <precision_in_phase_estimation : double in (0, inf)>] (Default: 0.01)
-[-a <alpha : double in [0,1]>]  (Default: 1.0)
+[-p <precision_in_phase_estimation : double in (0, inf)>] (Default: 1e-4)
+[-a <alpha : double in [0,1]>]  (Default: 0.5)
 [-n <number_of_evidence_samples_per_iteration : int in [1, inf)>] (Default: 1 / precision^{alpha})
+[-r <number_of_repetitions : size_t in (0, inf)>] (Default: 1)
+[-v] (Verbose mode: Prints details of each repeated AQPE experiment to stdout.)
 [-h] (Display this help message.)
 ```
 
