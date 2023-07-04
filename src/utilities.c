@@ -63,11 +63,11 @@ printUsage(void)
 	fprintf(stdout, "Command line arguments:\n");
 	fprintf(stdout,
 		"[-s <K> <sample1> <sample2> ... <sampleK> <sampleWeight1> <sampleWeight2> ... <sampleWeightK>] (K in [%d, %d])\n"
-		"[-i [path_to_input_csv_file : str] (Default: '../inputs/%s')] (Default: stdin)\n"
-		"[-o [path_to_output_csv_file : str] (Default: './sd0/acceleratedQuantumWaveEstimationOutput.csv')] (Default: stdout)\n"
+		"[-i [path_to_input_csv_file : str] (Default: '%s')]\n"
+		"[-o [path_to_output_csv_file : str] (Default: './sd0/aqpeOutput.csv')]\n"
 		"[-t <target_phase : double in [-pi, pi]>] (Default: pi / 2)\n"
-		"[-p <precision_in_phase_estimation : double in [%le, %le]>] (Default: 0.01)\n"
-		"[-a <alpha : double in [0,1]>] (Default: 0.0)\n"
+		"[-p <precision_in_phase_estimation : double in [%le, %le]>] (Default: 1e-4)\n"
+		"[-a <alpha : double in [0,1]>] (Default: 0.5)\n"
 		"[-n <number_of_evidence_samples_per_iteration : uint64_t in [0, inf)>] (Default: see README.md)\n"
 		"[-r <number_of_repetitions : size_t in (0, inf)>] (Default: 1)\n"
 		"[-v] (Verbose mode: Prints details of each repeated AQPE experiment to stdout.)\n"
@@ -328,7 +328,7 @@ getCommandLineArguments(
 					}
 					case 'o':
 					{
-						arguments->outputFilePath = "./sd0/acceleratedQuantumWaveEstimationOutput.csv";
+						arguments->outputFilePath = "./sd0/aqpeOutput.csv";
 						arguments->outputPipelineMode = false;
 						break;
 					}

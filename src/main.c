@@ -256,12 +256,12 @@ int
 main(int argc, char *  argv[])
 {
 	CommandLineArguments	arguments = {
-		.inputFilePath				= "stdin",
-		.outputFilePath				= "stdout",
-		.outputPipelineMode			= true,
+		.inputFilePath				= "input.csv",
+		.outputFilePath				= "./sd0/aqpeOutput.csv",
+		.outputPipelineMode			= false,
 		.targetPhi				= M_PI / 2,
-		.precision				= 0.01,
-		.alpha					= 1.0,
+		.precision				= 1e-4,
+		.alpha					= 0.5,
 		.numberOfEvidenceSamplesPerIteration	= 0,
 		.numberOfRepetitions			= 1,
 		.verbose				= false,
