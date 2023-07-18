@@ -25,11 +25,18 @@ With the contemporary NISQ-era quantum computers being capable of maintaining qb
 After clicking on the "add to signaloid.io" button at the top of this README, you will be connected to the Repositories Tab on the Signaloid Cloud Developer Platform. Next, click on the <img width="45" alt="Screenshot 2023-06-29 at 22 55 31" src="https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx/assets/86417/6a076901-ae9b-4933-bf89-d3120baa29f8"> button to set the command-line arguments to `-i -o -p 1e-4 -a 0.5`. This sets $\alpha = 0.5$ and the estimation precision to $10^{-4}$. For these values, the required quantum circuit depth is $D = 100$ and the required number of shots or measurements per quantum circuit mapped to a quantum computer is $N = 39996$. This depth is achievable by NISQ-era quantum computers.
 
 ## Signaloid Highlights
-Compared with the [RFPE approach](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx), the implementation of AQPE in this repository takes advantage of the Bayes-Laplace operation supported by the Signaloid compute engine and exposed thorugh the `UxHW` API, to achieve:
+Compared with the [RFPE approach](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx), the implementation of AQPE in this repository takes advantage of the Bayes-Laplace operation supported by the Signaloid compute engine and exposed thorugh the `UxHw` API, to achieve:
 - Faster execution times.
 - More robust convergence statistics.
 - Fewer required number of iterative circuit mappings to quantum hardware.
 - Easier access to Bayesian inference without the need to worry about implementing an efficient approximation of Bayesian inference as in the case of RFPE.
+
+The table below compares the results of the Signaloid implementation against the RFPE method in $1000$ repeated AQPE experiments (using the `-r 1000` command-line argument) for $\alpha = 0.5$ and the estimation precision $p = 10^{-4}$:
+| Performance metric | Signaloid implementation | RFPE method |
+| -- | :--: | :--: |
+| Number of successful convergences (within $4p$ of target)| $967$ | $751$ |
+| Average number of required circuit mappings | $4.868$ | $7.599$ |
+| Required number of lines of code for Bayesian inference | $36$ | $63$ |
 
 ## Usage
 ```
