@@ -241,7 +241,7 @@ runAQPEExperiment(
 	{
 		if (convergenceAchieved)
 		{
-			printf("\nAQPE Experiment #%zu: Successfully acheieved precision in %zu iterative circuit mappings to quantum hardware! The final estimate is %le.\n", experimentNo, *convergenceIterationCount, *estimatedPhi);
+			printf("\nAQPE Experiment #%zu: Successfully achieved precision in %zu iterative circuit mappings to quantum hardware! The final estimate is %le.\n", experimentNo, *convergenceIterationCount, *estimatedPhi);
 		}
 		else
 		{

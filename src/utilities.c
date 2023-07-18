@@ -58,7 +58,7 @@ const uint64_t		kMaximumNumberOfEvidenceSamples = kUtilityConstantsMaxNumberOfIn
 void
 printUsage(void)
 {
-	fprintf(stdout, "\nExample: Accelerated Quantum Phase Estimation (AQPE)\n");
+	fprintf(stdout, "Example: Accelerated Quantum Phase Estimation (AQPE)\n");
 	fprintf(stdout, "\n");
 	fprintf(stdout, "Command line arguments:\n");
 	fprintf(stdout,
@@ -117,7 +117,7 @@ getCommandLineArguments(
 				}
 				else
 				{
-					fprintf(stderr, "\nError: Illegal argument %s for option -%c.\n", optarg, opt);
+					fprintf(stderr, "Error: Illegal argument %s for option -%c.\n", optarg, opt);
 
 					return kUtilityConstantsError;
 				}
@@ -136,20 +136,20 @@ getCommandLineArguments(
 
 				if (errno != 0 || end == optarg || strcmp(end, "\0") != 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of samples) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (number of samples) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if (sampleCount < kUtilityConstantsMinNumberOfInputSamples ||
 				    sampleCount > kUtilityConstantsMaxNumberOfInputSamples)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of samples) should be a non-negative integer, between %d and %d\n",
-						opt, kUtilityConstantsMinNumberOfInputSamples, kUtilityConstantsMinNumberOfInputSamples);
+					fprintf(stderr, "Error: The argument of option -%c (number of samples) should be a non-negative integer, between %d and %d.\n",
+						opt, kUtilityConstantsMinNumberOfInputSamples, kUtilityConstantsMaxNumberOfInputSamples);
 					return kUtilityConstantsError;
 				}
 				if (optind + 2*sampleCount > argc)
 				{
-					fprintf(stderr, "\nError: Invalid number of arguments. Expected %f samples and %f weights, got less.\n",
+					fprintf(stderr, "Error: Invalid number of arguments. Expected %f samples and %f weights, got less.\n",
 						sampleCount, sampleCount);
 					return kUtilityConstantsError;
 				}
@@ -175,12 +175,13 @@ getCommandLineArguments(
 				else
 				{
 					arguments->priorSet = true;
+					sprintf(arguments->inputFilePath, "-");
 				}
 				break;
 			}
 			case 'i':
 			{
-				arguments->inputFilePath = optarg;
+				sprintf(arguments->inputFilePath, "%s", optarg);
 				/**
 				 *	Check if the user has already provided samples as input.
 				 *	If so, print an error message and exit.
@@ -198,7 +199,7 @@ getCommandLineArguments(
 			}
 			case 'o':
 			{
-				arguments->outputFilePath = optarg;
+				sprintf(arguments->outputFilePath, "./sd0/%s", optarg);
 				arguments->outputPipelineMode = false;
 				break;
 			}
@@ -208,13 +209,13 @@ getCommandLineArguments(
 				arguments->targetPhi = strtod(optarg, &end);
 				if (errno != 0 || end == optarg || strcmp(end, "\0") != 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (target phase) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (target phase) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if ((arguments->targetPhi < kMinimumPhi) || (arguments->targetPhi > kMaximumPhi))
 				{
-					fprintf(stderr, "\nWarning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumPhi, kMaximumPhi, arguments->targetPhi);
+					fprintf(stderr, "Warning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumPhi, kMaximumPhi, arguments->targetPhi);
 				}
 				break;
 			}
@@ -224,14 +225,14 @@ getCommandLineArguments(
 				double value = strtod(optarg, &end);
 				if (errno != 0 || end == optarg)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (precision) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (precision) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if ((value < kMinimumPrecision) ||
 				    (value > kMaximumPrecision))
 				{
-					fprintf(stderr, "\nWarning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumPrecision, kMaximumPrecision, arguments->precision);
+					fprintf(stderr, "Warning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumPrecision, kMaximumPrecision, arguments->precision);
 				}
 				else
 				{
@@ -245,13 +246,13 @@ getCommandLineArguments(
 				arguments->alpha = strtod(optarg, &end);
 				if (errno != 0 || end == optarg || strcmp(end, "\0") != 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (alpha) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (alpha) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if ((arguments->alpha < kMinimumAlpha) || (arguments->alpha > kMaximumAlpha))
 				{
-					fprintf(stderr, "\nWarning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumAlpha, kMaximumAlpha, arguments->alpha);
+					fprintf(stderr, "Warning: The argument of option -%c (precision) should be in [%le, %le]. Continuing with the default value %le.\n", opt, kMinimumAlpha, kMaximumAlpha, arguments->alpha);
 				}
 				break;
 			}
@@ -262,13 +263,13 @@ getCommandLineArguments(
 				arguments->numberOfEvidenceSamplesPerIteration = (uint64_t) strtol(optarg, &end, 10);
 				if (errno != 0 || end == optarg)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of samples per Bayesian inference iteration) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (number of samples per Bayesian inference iteration) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if (arguments->numberOfEvidenceSamplesPerIteration < 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of samples per Bayesian inference iteration) should be a non-negative integer. Use '-%c 0' to trigger automatic selection.\n", opt, opt);
+					fprintf(stderr, "Error: The argument of option -%c (number of samples per Bayesian inference iteration) should be a non-negative integer. Use '-%c 0' to trigger automatic selection.\n", opt, opt);
 
 					return kUtilityConstantsError;
 				}
@@ -281,13 +282,13 @@ getCommandLineArguments(
 				arguments->numberOfRepetitions =  (size_t) strtol(optarg, &end, 10);
 				if (errno != 0 || end == optarg || strcmp(end, "\0") != 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of repetitions of the AQPE experiment) should be a valid number.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (number of repetitions of the AQPE experiment) should be a valid number.\n", opt);
 					return kUtilityConstantsError;
 				}
 
 				if (arguments->numberOfRepetitions <= 0)
 				{
-					fprintf(stderr, "\nError: The argument of option -%c (number of repetitions of the AQPE experiment) should be a positive integer.\n", opt);
+					fprintf(stderr, "Error: The argument of option -%c (number of repetitions of the AQPE experiment) should be a positive integer.\n", opt);
 
 					return kUtilityConstantsError;
 				}
@@ -310,7 +311,7 @@ getCommandLineArguments(
 				{
 					case 'i':
 					{
-						arguments->inputFilePath = (char *) kDefaultInputFilePath;
+						snprintf(arguments->inputFilePath, kUtilityConstantsMaxCharsPerFilepath, "%s", (char *) kDefaultInputFilePath);
 						/**
 						 *	Check if the user has already provided samples as input.
 						 *	If so, print an error message and exit.
@@ -328,13 +329,13 @@ getCommandLineArguments(
 					}
 					case 'o':
 					{
-						arguments->outputFilePath = "./sd0/aqpeOutput.csv";
+						snprintf(arguments->outputFilePath, kUtilityConstantsMaxCharsPerFilepath, "./sd0/aqpeOutput.csv");
 						arguments->outputPipelineMode = false;
 						break;
 					}
 					default:
 					{
-						fprintf(stderr, "\nError: Option -%c is missing a required argument.\n", optopt);
+						fprintf(stderr, "Error: Option -%c is missing a required argument.\n", optopt);
 						printUsage();
 
 						return kUtilityConstantsError;
@@ -344,7 +345,7 @@ getCommandLineArguments(
 			}
 			case '?':
 			{
-				fprintf(stderr, "\nError: Invalid option: -%c.\n", optopt);
+				fprintf(stderr, "Error: Invalid option: -%c.\n", optopt);
 				printUsage();
 
 				return kUtilityConstantsError;
@@ -365,7 +366,7 @@ getCommandLineArguments(
 
 		if ((!userSpecifiedEvidenceNumber) && (arguments->numberOfEvidenceSamplesPerIteration > kMaximumNumberOfEvidenceSamples))
 		{
-			fprintf(stderr, "\nWarning: The number of samples required from the quantum circuit, N = %"PRIu64", has exceeded the allowed maximum limit of %"PRIu64" samples. Using the maximum allowed.\n", arguments->numberOfEvidenceSamplesPerIteration, kMaximumNumberOfEvidenceSamples);
+			fprintf(stderr, "Warning: The number of samples required from the quantum circuit, N = %"PRIu64", has exceeded the allowed maximum limit of %"PRIu64" samples. Using the maximum allowed.\n", arguments->numberOfEvidenceSamplesPerIteration, kMaximumNumberOfEvidenceSamples);
 			fprintf(stderr, "Note: Use '-n 0' to permit the use of high default number of samples. You can also specify custom number of samples by using the '-n' command-line argument option, e.g., '-n %"PRIu64"'.\n", 10 * kMaximumNumberOfEvidenceSamples);
 			arguments->numberOfEvidenceSamplesPerIteration = kMaximumNumberOfEvidenceSamples;
 		}
@@ -373,7 +374,7 @@ getCommandLineArguments(
 
 	if (arguments->verbose)
 	{
-		printf("\nIn verbose mode!\n");
+		printf("In verbose mode!\n");
 	}
 	
 	if ((!arguments->outputPipelineMode))
@@ -421,7 +422,7 @@ readInputDistributionsFromCSV(
 
 		if (fp == NULL)
 		{
-			fprintf(stderr, "\nError: Cannot open the file %s.\n", inputFilePath);
+			fprintf(stderr, "Error: Cannot open the file %s.\n", inputFilePath);
 
 			return kUtilityConstantsError;
 		}
@@ -431,7 +432,7 @@ readInputDistributionsFromCSV(
 		/*
 		 *	TEMPORARY: Pipeline not supported
 		 */
-		fprintf(stderr, "\nError: Pipeline mode temporarily unavailable. Please use the '-i' command-line argument option.\n");
+		fprintf(stderr, "Error: Pipeline mode temporarily unavailable. Please use the '-i' command-line argument option.\n");
 
 		return kUtilityConstantsError;
 
@@ -445,7 +446,7 @@ readInputDistributionsFromCSV(
 
 			if (fp == NULL)
 			{
-				fprintf(stderr, "\nError: Cannot open the file %s.\n", kDefaultInputFilePath);
+				fprintf(stderr, "Error: Cannot open the file %s.\n", kDefaultInputFilePath);
 				return kUtilityConstantsError;
 			}
 		}
@@ -477,7 +478,7 @@ readInputDistributionsFromCSV(
 		{
 			if (columnCount == numberOfInputDistributions)
 			{
-				fprintf(stderr, "\nError: The input CSV data has more than expected entries at data row %zu.\n", rowCount);
+				fprintf(stderr, "Error: The input CSV data has more than expected entries at data row %zu.\n", rowCount);
 
 				return kUtilityConstantsError;
 			}
@@ -505,7 +506,7 @@ readInputDistributionsFromCSV(
 			}
 			else if ((strncmp(token, "0", 1)) && (value == 0))
 			{
-				fprintf(stderr, "\nError: The input CSV data at row %zu and column %zu is not a valid number.\n", rowCount, columnCount);
+				fprintf(stderr, "Error: The input CSV data at row %zu and column %zu is not a valid number.\n", rowCount, columnCount);
 
 				return kUtilityConstantsError;
 			}
@@ -521,7 +522,7 @@ readInputDistributionsFromCSV(
 
 		if (columnCount != numberOfInputDistributions)
 		{
-			fprintf(stderr, "\nError: The input CSV data has less than expected entries at data row %zu.\n", rowCount);
+			fprintf(stderr, "Error: The input CSV data has less than expected entries at data row %zu.\n", rowCount);
 
 			return kUtilityConstantsError;
 		}
@@ -566,7 +567,7 @@ writeOutputDistributionsToCSV(
 
 		if (fp == NULL)
 		{
-			fprintf(stderr, "\nError: Cannot open the file %s.\n", outputFilePath);
+			fprintf(stderr, "Error: Cannot open the file %s.\n", outputFilePath);
 
 			return kUtilityConstantsError;
 		}
@@ -578,7 +579,7 @@ writeOutputDistributionsToCSV(
 
 	for (size_t i = 0; i < numberOfOutputDistributions; i++)
 	{
-		fprintf(fp, outputVariableNames[i]);
+		fprintf(fp, "%s", outputVariableNames[i]);
 		if (i != numberOfOutputDistributions - 1)
 		{
 			fprintf(fp, ", ");
@@ -627,7 +628,7 @@ processSampleList(
 		 */
 		if (errno != 0 || strcmp(end, "\0") != 0)
 		{
-			fprintf(stderr, "\nError: Invalid sample at position %d.\n", i+1);
+			fprintf(stderr, "Error: Invalid sample at position %d.\n", i+1);
 			return kUtilityConstantsError;
 		}
 	}
@@ -638,7 +639,7 @@ processSampleList(
 		weightedSamples[i].sampleWeight = strtod(argv[optind++], &end);
 		if (errno != 0 || strcmp(end, "\0") != 0)
 		{
-			fprintf(stderr, "\nError: Invalid weight at position %d.\n", i+1+sampleCount);
+			fprintf(stderr, "Error: Invalid weight at position %d.\n", i+1+sampleCount);
 			return kUtilityConstantsError;
 		}
 	}
@@ -650,4 +651,3 @@ processSampleList(
 
 	return kUtilityConstantsSuccess;
 }
-

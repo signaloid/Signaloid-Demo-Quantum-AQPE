@@ -46,6 +46,7 @@ typedef enum
 	kUtilityConstantsMaxNumberOfInputSamples	= 100000,
 	kUtilityConstantsMinNumberOfInputSamples	= 1,
 	kUtilityConstantsMaxCharsPerLine		= 1024 * 1024,
+	kUtilityConstantsMaxCharsPerFilepath		= 1024,
 	kUtilityConstantsError				= 1,
 	kUtilityConstantsSuccess			= 0
 } UtilityConstants;
@@ -57,8 +58,8 @@ extern int	outputPipelineMode;
 
 typedef struct CommandLineArguments
 {
-	char *		inputFilePath;
-	char *		outputFilePath;
+	char		inputFilePath[kUtilityConstantsMaxCharsPerFilepath];
+	char		outputFilePath[kUtilityConstantsMaxCharsPerFilepath];
 	bool		outputPipelineMode;
 	double		targetPhi;
 	double		precision;
@@ -108,8 +109,8 @@ readInputDistributionsFromCSV(
 /**
  *	@brief	Write Ux-valued data to a CSV file.
  *
- *	@param	outputFilePath		: path prefix for the output CSV file to write to
- *	@param	outputVariables		: array of output distributions whose Ux representations we will write to the output CSV
+ *	@param	outputFilePath			: path prefix for the output CSV file to write to
+ *	@param	outputVariables			: array of output distributions whose Ux representations we will write to the output CSV
  *	@param	numberOfOutputDistributions	: number of output distributions whose Ux representations we will write to the output CSV
  *	@param	outputVariableNames		: names of output distributions whose Ux representations we will write to the output CSV
  *	@return	int				: 0 if successful, else 1
@@ -123,11 +124,11 @@ writeOutputDistributionsToCSV(
 
 /**
  *	Process a list of weighted samples and store the output distribution in the out array.
- *	@param argc Number of arguments
- *	@param argv Array of arguments
- *	@param sampleCount Number of samples for the distribution
- *	@param out Pointer to the output distribution
- *	@return int 0 if successful, else 1
+ *	@param argc		: Number of arguments
+ *	@param argv		: Array of arguments
+ *	@param sampleCount	: Number of samples for the distribution
+ *	@param out		: Pointer to the output distribution
+ *	@return			: int 0 if successful, else 1
  */
 int
 processSampleList(
