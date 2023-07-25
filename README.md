@@ -26,17 +26,19 @@ After clicking on the "add to signaloid.io" button at the top of this README, yo
 
 ## Signaloid Highlights
 Compared with the [RFPE approach](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx), the implementation of AQPE in this repository takes advantage of the Bayes-Laplace operation supported by the Signaloid compute engine and exposed thorugh the `UxHw` API, to achieve:
-- Faster execution times.
-- More robust convergence statistics.
-- Fewer required number of iterative circuit mappings to quantum hardware.
-- Easier access to Bayesian inference without the need to worry about implementing an efficient approximation of Bayesian inference as in the case of RFPE.
+1. Faster execution times.
+2. More robust convergence statistics.
+3. Fewer total required number of iterative circuit mappings to quantum hardware to achieve convergence.
+4. Fewer total required number of quantum circuit measurements to achieve convergence.
+5. Easier access to Bayesian inference without the need to worry about implementing an efficient approximation of Bayesian inference as in the case of RFPE.
 
 The table below compares the results of the Signaloid implementation against the RFPE method in $1000$ repeated AQPE experiments (using the `-r 1000` command-line argument) for $\alpha = 0.5$ and the estimation precision $p = 10^{-4}$:
-| Performance metric | Signaloid implementation | RFPE method |
+| Performance metric | Signaloid implementation (on C0-L+) | [RFPE method](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx) |
 | -- | :--: | :--: |
-| Number of successful convergences (within $4p$ of target)| $967$ | $751$ |
-| Average number of required circuit mappings | $4.868$ | $7.599$ |
-| Required number of lines of code for Bayesian inference | $36$ | $63$ |
+| **More robust convergence statistics:**<br>Number of successful convergences (within $4p$ of target)| $967$ (of $1000$ repeated experiments) | $751$  (of $1000$ repeated experiments) |
+| **Fewer total required number of circuit mappings to quantum hardware to achieve convergence:**<br>Average total required number of quantum circuit mappings | $4.868$ quantum circuit mappings [^3] | $7.599$ quantum circuit mappings |
+| **Fewer total required number of quantum circuit measurements to achieve convergence:**<br>Average total required number of shots | $194700$ shots [^4] | $303930$ shots |
+| **Easier access to Bayesian inference:**<br>Required number of lines of code for Bayesian inference | $14$[^5] lines of code | $63$ lines of code |
 
 ## Usage
 ```
@@ -72,3 +74,9 @@ The table below compares the results of the Signaloid implementation against the
 [^1]: Vasileios Tsoutsouras, Orestis Kaparounakis, Bilgesu Arif Bilgin, Chatura Samarakoon, James Timothy Meech, Jan Heck, Phillip Stanley-Marbell: The Laplace Microarchitecture for Tracking Data Uncertainty and Its Implementation in a RISC-V Processor. MICRO 2021: 1254-1269.
 
 [^2]: A. Y. Kitaev, A. Shen, and M. N. Vyalyi: Classical and Quantum Computation. American Mathematical Society, 2002.
+
+[^3]: A 35.94% reduction in the required number of quantum circuit mappings to quantum computer hardware.
+
+[^4]: A 35.94% reduction in the required number of quantum circuit measurements.
+
+[^5]: In our implementation, there are an additional 22 lines of safety-checking code to check for memory allocation bounds.
