@@ -21,7 +21,7 @@ The table above shows the requirements for the quantum circuit depth $D$ and the
 
 With the contemporary NISQ-era quantum computers being capable of maintaining qbit coherence for quantum circuit depths of only few hundreds, implementing Kitaev's QPE approach is out of question for low values of $p$ (e.g., $p \leq 10^{-3}$ for which $D \geq O(10^3)$). On the other hand, the high number of required quantum circuit measurements for VQE renders it prohibitive for low values of $p$ (e.g., $p \leq 10^{-3} for which $N \geq O(10^6)$). AVQE allows one to achieve a trade-off between $D$ and $N$, where one would choose $\alpha > 0$ for a given maximum depth $D_{\mathrm{max}}$ that an available NISQ computing machine can sustain and would require less number of quantum circuit measurements compared to VQE.
 
-## An interesting use-case for NISQ era
+## An interesting use case for NISQ era
 After clicking on the "add to signaloid.io" button at the top of this README, you will be connected to the Repositories Tab on the Signaloid Cloud Developer Platform. Next, click on the <img width="45" alt="Screenshot 2023-06-29 at 22 55 31" src="https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx/assets/86417/6a076901-ae9b-4933-bf89-d3120baa29f8"> button to set the command-line arguments to `-i -o -p 1e-4 -a 0.5`. This sets $\alpha = 0.5$ and the estimation precision to $10^{-4}$. For these values, the required quantum circuit depth is $D = 100$ and the required number of shots or measurements per quantum circuit mapped to a quantum computer is $N = 39996$. This depth is achievable by NISQ-era quantum computers.
 
 ## Signaloid Highlights
@@ -33,12 +33,13 @@ Compared with the [RFPE approach](https://github.com/signaloid/Signaloid-Demo-Qu
 5. Easier access to Bayesian inference without the need to worry about implementing an efficient approximation of Bayesian inference as in the case of RFPE.
 
 The table below compares the results of the Signaloid implementation against the RFPE method in $1000$ repeated AQPE experiments (using the `-r 1000` command-line argument) for $\alpha = 0.5$ and the estimation precision $p = 10^{-4}$:
-| Performance metric | Signaloid implementation (on C0-L+) | [RFPE method](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx) |
-| -- | :--: | :--: |
-| **More robust convergence statistics:**<br>Number of successful convergences (within $4p$ of target)| $967$ (of $1000$ repeated experiments) | $751$  (of $1000$ repeated experiments) |
-| **Fewer total required number of circuit mappings to quantum hardware to achieve convergence:**<br>Average total required number of quantum circuit mappings | $4.868$ quantum circuit mappings [^3] | $7.599$ quantum circuit mappings |
-| **Fewer total required number of quantum circuit measurements to achieve convergence:**<br>Average total required number of shots | $194700$ shots [^4] | $303930$ shots |
-| **Easier access to Bayesian inference:**<br>Required number of lines of code for Bayesian inference | $14$[^5] lines of code | $63$ lines of code |
+| Performance metric | Signaloid solution (C0pro-S+) [^3] | [RFPE method](https://github.com/signaloid/Signaloid-Demo-Quantum-AQPE-NoUx) | Signaloid improvement percentages |
+| -- | :--: | :--: | :--: |
+| **Faster execution times:**<br>Elapsed user time for $1000$ AQPE experiments [^4] | $3.657$ seconds | $4.057$ seconds | 9.86% faster classical component runtime |
+| **More robust convergence statistics:**<br>Number of successful convergences (within $4p$ of target) | $992$ (of $1000$ repeated experiments) | $751$  (of $1000$ repeated experiments) | 32.09% more robust convergence statistics|
+| **Fewer total required number of circuit mappings to quantum hardware to achieve convergence:**<br>Average total required number of quantum circuit mappings | $4.188$ quantum circuit mappings | $7.599$ quantum circuit mappings | 44.89% better hardware usage efficiency |
+| **Fewer total required number of quantum circuit measurements to achieve convergence:**<br>Average total required number of shots | $167503$ shots | $303930$ shots | 44.89% better hardware usage efficiency |
+| **Easier access to Bayesian inference:**<br>Required number of lines of code for Bayesian inference | $14$ lines of code [^5] | $63$ lines of code | 77.78% shorter code |
 
 ## Usage
 ```
@@ -75,8 +76,8 @@ The table below compares the results of the Signaloid implementation against the
 
 [^2]: A. Y. Kitaev, A. Shen, and M. N. Vyalyi: Classical and Quantum Computation. American Mathematical Society, 2002.
 
-[^3]: A 35.94% reduction in the required number of quantum circuit mappings to quantum computer hardware.
+[^3]: C0pro-S+ is a core from the C0pro family and has the same configuration parameters as the standard C0-S+ core. In contrast to standard C0 cores, C0pro cores do not suffer from the virtualization overhead caused by our hardware emulator. C0pro cores are in limited private beta: we are indeed making it available for customers who get dedicated servers.
 
-[^4]: A 35.94% reduction in the required number of quantum circuit measurements.
+[^4]: We evaluated the performance for the Signaloid solution versus RFPE running on a 16-core Intel Xeon Platinum 8275CL CPU running at 3.00GHz.
 
 [^5]: In our implementation, there are an additional 22 lines of safety-checking code to check for memory allocation bounds.
