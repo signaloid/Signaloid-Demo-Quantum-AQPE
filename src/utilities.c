@@ -186,14 +186,10 @@ getCommandLineArguments(
 				 *	Check if the user has already provided samples as input.
 				 *	If so, print an error message and exit.
 				 */
-				if (!arguments->priorSet)
-				{
-					arguments->priorSet = true;
-				}
-				else
+				if (arguments->priorSet)
 				{
 					fprintf(stderr, "Error: Define either samples (-s) or input file (-i), not both.\nIf you are using the web-based application, select \"Initial prior from file\" to use -i.\nThe slider widget automatically generates samples and uses the -s option.\n");
-					return 1;
+					return kUtilityConstantsError;
 				}
 				break;
 			}
@@ -320,10 +316,6 @@ getCommandLineArguments(
 						{
 							fprintf(stderr, "Error: Define either samples (-s) or input file (-i), not both.\n");
 							return kUtilityConstantsError;
-						}
-						else
-						{
-							arguments->fileSet = true;
 						}
 						break;
 					}
