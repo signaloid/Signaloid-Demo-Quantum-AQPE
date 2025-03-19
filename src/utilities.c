@@ -1,39 +1,25 @@
 /*
- *	Authored 2021, Chatura Samarakoon.
- *	Authored 2023, Bilgesu Bilgin, Stelios Tsagkarakis.
+ *	Copyright (c) 2021–2025, Signaloid.
  *
- *	Copyright (c) 2021--2023, Signaloid.
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
  *
- *	All rights reserved.
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
  *
- *	Redistribution and use in source and binary forms, with or without
- *	modification, are permitted provided that the following conditions
- *	are met:
- *	*	Redistributions of source code must retain the above
- *		copyright notice, this list of conditions and the following
- *		disclaimer.
- *	*	Redistributions in binary form must reproduce the above
- *		copyright notice, this list of conditions and the following
- *		disclaimer in the documentation and/or other materials
- *		provided with the distribution.
- *	*	Neither the name of the author nor the names of its
- *		contributors may be used to endorse or promote products
- *		derived from this software without specific prior written
- *		permission.
- *
- *	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *	POSSIBILITY OF SUCH DAMAGE.
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
  */
+
 #include <math.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -66,14 +52,17 @@ printUsage(void)
 		"[-i [path_to_input_csv_file : str] (Default: '%s')]\n"
 		"[-o [path_to_output_csv_file : str] (Default: './sd0/aqpeOutput.csv')]\n"
 		"[-t <target_phase : double in [-pi, pi]>] (Default: pi / 2)\n"
-		"[-p <precision_in_phase_estimation : double in [%le, %le]>] (Default: 1e-4)\n"
+		"[-p <precision_in_phase_estimation : double in [%"SignaloidParticleModifier"le, %"SignaloidParticleModifier"le]>] (Default: 1e-4)\n"
 		"[-a <alpha : double in [0,1]>] (Default: 0.5)\n"
 		"[-n <number_of_evidence_samples_per_iteration : uint64_t in [0, inf)>] (Default: see README.md)\n"
 		"[-r <number_of_repetitions : size_t in (0, inf)>] (Default: 1)\n"
 		"[-v] (Verbose mode: Prints details of each repeated AQPE experiment to stdout.)\n"
 		"[-h] (Display this help message.)\n",
-		kUtilityConstantsMinNumberOfInputSamples, kUtilityConstantsMaxNumberOfInputSamples,
-		kDefaultInputFilePath, kMinimumPrecision, kMaximumPrecision);
+		kUtilityConstantsMinNumberOfInputSamples,
+		kUtilityConstantsMaxNumberOfInputSamples,
+		kDefaultInputFilePath,
+		kMinimumPrecision,
+		kMaximumPrecision);
 	fprintf(stdout, "\n");
 }
 
@@ -373,9 +362,9 @@ getCommandLineArguments(
 	{
 		printf("inputFilePath = %s\n", arguments->inputFilePath);
 		printf("outputFilePath = %s\n", arguments->outputFilePath);
-		printf("targetPhi = %lf\n", arguments->targetPhi);
-		printf("alpha = %lf\n", arguments->alpha);
-		printf("precision = %le\n", arguments->precision);
+		printf("targetPhi = %"SignaloidParticleModifier"lf\n", arguments->targetPhi);
+		printf("alpha = %"SignaloidParticleModifier"lf\n", arguments->alpha);
+		printf("precision = %"SignaloidParticleModifier"le\n", arguments->precision);
 		printf("numberOfEvidenceSamplesPerIteration = %"PRIu64"\n", arguments->numberOfEvidenceSamplesPerIteration);
 		printf("numberOfRepetitions = %zu\n", arguments->numberOfRepetitions);
 		printf("\nRequired Quantum Circuit Depth (D) = %"PRIu64"\n", (uint64_t) ceil(1 / pow(arguments->precision, arguments->alpha)));
@@ -638,7 +627,6 @@ processSampleList(
 
 	*out = UxHwDoubleDistFromWeightedSamples(
 		weightedSamples,
-		sampleCount,
 		sampleCount);
 
 	return kUtilityConstantsSuccess;

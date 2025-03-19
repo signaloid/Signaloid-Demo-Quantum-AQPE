@@ -1,45 +1,45 @@
 /*
- *	Authored 2021, Chatura Samarakoon.
- *	Authored 2023, Bilgesu Bilgin, Stelios Tsagkarakis.
+ *	Copyright (c) 2021–2025, Signaloid.
  *
- *	Copyright (c) 2021--2023, Signaloid.
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
  *
- *	All rights reserved.
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
  *
- *	Redistribution and use in source and binary forms, with or without
- *	modification, are permitted provided that the following conditions
- *	are met:
- *	*	Redistributions of source code must retain the above
- *		copyright notice, this list of conditions and the following
- *		disclaimer.
- *	*	Redistributions in binary form must reproduce the above
- *		copyright notice, this list of conditions and the following
- *		disclaimer in the documentation and/or other materials
- *		provided with the distribution.
- *	*	Neither the name of the author nor the names of its
- *		contributors may be used to endorse or promote products
- *		derived from this software without specific prior written
- *		permission.
- *
- *	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *	POSSIBILITY OF SUCH DAMAGE.
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
  */
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <uxhw.h>
 #include "utilities.h"
+
+
+typedef enum
+{
+	kNumberOfOutputDistributions	= 2,
+	kMaxNumberOfIterations		= 100,
+	kMaxNumberOfBatchSamples	= 100000,
+} Constants;
+
+typedef struct
+{
+	double	currentM;
+	double	currentTheta;
+} EvidenceModelParameters;
 
 double
 calculateM(
@@ -52,13 +52,16 @@ calculateTheta(
 	double	standardDeviation);
 
 double
-likelihood(double phiPriorValue);
+evidenceModel(
+	void *	evidenceModelParameters,
+	double	phiPriorValue);
 
 void
 runQPECircuit(
-	double		targetPhi,
-	double *	evidenceDistribution,
-	uint64_t	numberOfEvidenceSamples);
+	double			targetPhi,
+	double *		evidenceDistribution,
+	uint64_t		numberOfEvidenceSamples,
+	EvidenceModelParameters	evidenceModelParameters);
 
 bool
 runAQPEExperiment(
@@ -67,17 +70,6 @@ runAQPEExperiment(
 	size_t			experimentNo,
 	size_t *		convergenceIterationCount,
 	double *		estimatedPhi);
-
-typedef enum
-{
-	kNumberOfOutputDistributions	= 2,
-	kMaxNumberOfIterations		= 100,
-	kMaxNumberOfBatchSamples	= 100000,
-} Constants;
-
-double	currentM;
-double	currentTheta;
-
 
 double
 calculateM(
@@ -103,30 +95,39 @@ calculateTheta(
 }
 
 double
-likelihood(double phiPrior)
+evidenceModel(
+	void *	evidenceModelParameters,
+	double	phiPrior)
 {
-	double zeroProbability = (1 + cos(currentM * (phiPrior - currentTheta))) / 2;
-	double mixture = UxHwDoubleMixture(0.0, 1.0, zeroProbability);
+	EvidenceModelParameters *	evidenceModelParametersCast;
+	double				zeroProbability;
+	double				mixture;
+
+	evidenceModelParametersCast = (EvidenceModelParameters *)(evidenceModelParameters);
+	zeroProbability = (1 + cos(evidenceModelParametersCast->currentM * (phiPrior - evidenceModelParametersCast->currentTheta))) / 2;
+	mixture = UxHwDoubleMixture(0.0, 1.0, zeroProbability);
 
 	return mixture;
 }
 
 void
 runQPECircuit(
-	double   	targetPhi,
-	double * 	evidenceDistribution,
-	uint64_t	numberOfEvidenceSamples)
+	double			targetPhi,
+	double *		evidenceDistribution,
+	uint64_t		numberOfEvidenceSamples,
+	EvidenceModelParameters	evidenceModelParameters)
 {
-	double			probabilityEvidence0GivenPhiPrior = (1 + cos(currentM * (targetPhi - currentTheta))) / 2;
-	double			tempUniformDistribution = UxHwDoubleUniformDist(0.0, 1.0);
+	double			probabilityEvidence0GivenPhiPrior;
+	double			tempUniformDistribution;
 	double			uniformSampleArray[kMaxNumberOfBatchSamples];
 	double			zeroEvidenceProbability;
 	uint64_t		zeroEvidenceCount = 0.0;
 	uint64_t		numberOfBatchSamples;
 	uint64_t		remainingNumberOfSamples = numberOfEvidenceSamples;
-	uint64_t		i;
 	WeightedDoubleSample	evidenceWeightedSamples[2];
 
+	probabilityEvidence0GivenPhiPrior = (1 + cos(evidenceModelParameters.currentM * (targetPhi - evidenceModelParameters.currentTheta))) / 2;
+	tempUniformDistribution = UxHwDoubleUniformDist(0.0, 1.0);
 
 	while (remainingNumberOfSamples > 0)
 	{
@@ -143,7 +144,7 @@ runQPECircuit(
 
 		UxHwDoubleSampleBatch(tempUniformDistribution, uniformSampleArray, numberOfBatchSamples);
 
-		for (i = 0; i < numberOfBatchSamples; i++)
+		for (uint64_t i = 0; i < numberOfBatchSamples; i++)
 		{
 			if (uniformSampleArray[i] < probabilityEvidence0GivenPhiPrior)
 			{
@@ -158,7 +159,7 @@ runQPECircuit(
 	evidenceWeightedSamples[1].sample = 1.0;
 	evidenceWeightedSamples[1].sampleWeight = 1.0 - zeroEvidenceProbability;
 
-	*evidenceDistribution = UxHwDoubleDistFromWeightedSamples(evidenceWeightedSamples, 2, numberOfEvidenceSamples);
+	*evidenceDistribution = UxHwDoubleDistFromWeightedSamples(evidenceWeightedSamples, 2);
 
 	return;
 }
@@ -172,12 +173,13 @@ runAQPEExperiment(
 	size_t *		convergenceIterationCount,
 	double *		estimatedPhi)
 {
-	double		phiPrior[kMaxNumberOfIterations + 1];
-	double		evidenceDistribution;
-	double		meanValue;
-	double		standardDeviation;
-	bool		convergenceAchieved  = false;
-	size_t		i;
+	double			phiPrior[kMaxNumberOfIterations + 1];
+	double			evidenceDistribution;
+	double			meanValue;
+	double			standardDeviation;
+	EvidenceModelParameters	evidenceModelParameters;
+	bool			convergenceAchieved  = false;
+	size_t			i;
 
 	/*
 	 *	AQPE experiment initializations
@@ -198,11 +200,20 @@ runAQPEExperiment(
 	 */
 	for (i = 0; i < kMaxNumberOfIterations; i++)
 	{
-		currentM = calculateM(standardDeviation, arguments->alpha);
-		currentTheta = calculateTheta(meanValue, standardDeviation);
+		evidenceModelParameters.currentM = calculateM(standardDeviation, arguments->alpha);
+		evidenceModelParameters.currentTheta = calculateTheta(meanValue, standardDeviation);
 
-		runQPECircuit(arguments->targetPhi, &evidenceDistribution, arguments->numberOfEvidenceSamplesPerIteration);
-		phiPrior[i + 1] = UxHwDoubleBayesLaplace(&likelihood, phiPrior[i], evidenceDistribution);
+		runQPECircuit(
+			arguments->targetPhi,
+			&evidenceDistribution,
+			arguments->numberOfEvidenceSamplesPerIteration,
+			evidenceModelParameters);
+		phiPrior[i + 1] = UxHwDoubleBayesLaplace(
+					&evidenceModel,
+					(void *)(&evidenceModelParameters),
+					phiPrior[i],
+					evidenceDistribution,
+					arguments->numberOfEvidenceSamplesPerIteration);
 
 		if (isnan(phiPrior[i + 1]))
 		{

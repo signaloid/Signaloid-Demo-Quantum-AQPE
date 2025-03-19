@@ -9,7 +9,7 @@ The AQPE algorithm is a method to estimate the eigenphase $\phi$ corresponding t
 
 <img width="800" alt="image" src="https://user-images.githubusercontent.com/115564080/235872639-cb6866b2-cfcb-421f-b2cf-538110ca43fe.png">
 
-AVQE is a generalization of the standard Variational Quantum Eigensolver (VQE) which replaces the Quantum Expectation Estimation (QEE) subroutine with the AQPE subroutine and is a bridge between VQE and the classical QPE algorithm by Kitaev et al. [^2]. AVQE introduces a parameter $\alpha \in [0,1]$ that enables a tradeoff between the required quantum circuit depth $D$ and the number of required quantum circuit measurements $N$ to acheive a specified precision $p$ in estimating the value of the phase $\phi$.
+AVQE is a generalization of the standard Variational Quantum Eigensolver (VQE) which replaces the Quantum Expectation Estimation (QEE) subroutine with the AQPE subroutine and is a bridge between AVQE and the classical QPE algorithm by Kitaev et al. [^2]. AVQE introduces a parameter $\alpha \in [0,1]$ that enables a tradeoff between the required quantum circuit depth $D$ and the number of required quantum circuit measurements $N$ to acheive a specified precision $p$ in estimating the value of the phase $\phi$.
 
 | Algorithm | Quantum Circuit Depth, $D$ | Number of Quantum Circuit Measurements, $N$ |
 | ------ | --- | --- |
