@@ -188,7 +188,7 @@ runAQPEExperiment(
 	meanValue = UxHwDoubleNthMoment(phiPrior[0], 1);
 	standardDeviation = sqrt(UxHwDoubleNthMoment(phiPrior[0], 2));
 
-	if ((!arguments->outputPipelineMode) && (arguments->verbose))
+	if (arguments->verbose)
 	{
 		printf("\nStarting AQPE Experiment #%zu:\n", experimentNo);
 		printf("-------------------------------\n");
@@ -217,7 +217,7 @@ runAQPEExperiment(
 
 		if (isnan(phiPrior[i + 1]))
 		{
-			if ((!arguments->outputPipelineMode) && (arguments->verbose))
+			if (arguments->verbose)
 			{
 				printf("\nWarning: Posterior is NAN! Please use a larger precision value (via -p option).\n");
 			}
@@ -228,7 +228,7 @@ runAQPEExperiment(
 		meanValue = UxHwDoubleNthMoment(phiPrior[i + 1], 1);
 		standardDeviation = sqrt(UxHwDoubleNthMoment(phiPrior[i + 1], 2));
 
-		if ((!arguments->outputPipelineMode) && (arguments->verbose))
+		if (arguments->verbose)
 		{
 			printf("\nIteration %zu: Estimate Phi %le with mean value %le and standard deviation %le\n", i + 1, phiPrior[i + 1], meanValue, standardDeviation);
 		}
@@ -248,7 +248,7 @@ runAQPEExperiment(
 	/*
 	 *	Report the results of the current experiment.
 	 */
-	if ((!arguments->outputPipelineMode) && (arguments->verbose))
+	if (arguments->verbose)
 	{
 		if (convergenceAchieved)
 		{
@@ -268,8 +268,8 @@ main(int argc, char *  argv[])
 {
 	CommandLineArguments	arguments = {
 		.inputFilePath				= "input.csv",
-		.outputFilePath				= "./sd0/aqpeOutput.csv",
-		.outputPipelineMode			= false,
+		.outputFilePath				= "",
+		.writeOutputToFile			= false,
 		.targetPhi				= M_PI / 2,
 		.precision				= 1e-4,
 		.alpha					= 0.5,
@@ -297,7 +297,7 @@ main(int argc, char *  argv[])
 	 */
 	if (getCommandLineArguments(argc, argv, &arguments))
 	{
-		return 1;
+		return kUtilityConstantsError;
 	}
 
 	/*
@@ -311,7 +311,7 @@ main(int argc, char *  argv[])
 	{
 		if (readInputDistributionsFromCSV(arguments.inputFilePath, &initialPrior, 1))
 		{
-			return 1;
+			return kUtilityConstantsError;
 		}
 	}
 
@@ -322,14 +322,16 @@ main(int argc, char *  argv[])
 	if (numberOfTotalIterationsArray == NULL)
 	{
 		fprintf(stderr, "Allocation failed for 'numberOfTotalIterationsArray'. Exiting.\n");
-		return 1;
+
+		return kUtilityConstantsError;
 	}
 
 	distanceFromTargetArray = (double *) malloc(arguments.numberOfRepetitions * sizeof(double));
 	if (distanceFromTargetArray == NULL)
 	{
 		fprintf(stderr, "Allocation failed for 'distanceFromTargetArray'. Exiting.\n");
-		return 1;
+
+		return kUtilityConstantsError;
 	}
 
 	/*
@@ -365,27 +367,21 @@ main(int argc, char *  argv[])
 	 */
 	if (convergenceCount == 0)
 	{
-		if (!arguments.outputPipelineMode)
-		{
-			printf("\nConvergence failed for all %zu AQPE experiments within the allowed maximum limit of %d iterative circuit mappings to quantum hardware!\n", arguments.numberOfRepetitions, kMaxNumberOfIterations);
-		}
+		printf("\nConvergence failed for all %zu AQPE experiments within the allowed maximum limit of %d iterative circuit mappings to quantum hardware!\n", arguments.numberOfRepetitions, kMaxNumberOfIterations);
 	}
 	else
 	{
 		outputVariables[0] = UxHwDoubleDistFromSamples(numberOfTotalIterationsArray, convergenceCount);
 		outputVariables[1] = UxHwDoubleDistFromSamples(distanceFromTargetArray, convergenceCount);
 
-		if (!arguments.outputPipelineMode)
-		{
-			printf("\nConvergence achieved in %lf iterative circuit mappings to quantum hardware in %zu of %zu AQPE experiments and yielded a phase estimation error of %le.\n", outputVariables[0], convergenceCount, arguments.numberOfRepetitions, outputVariables[1]);
-			printf("\nIn %zu out of %zu converging experiments, the phase estimation error was greater than %d times the input precision %le.\n", wrongConvergenceCount, convergenceCount, (int) xSigmaValue, xSigmaValue * arguments.precision);
-		}
+		printf("\nConvergence achieved in %lf iterative circuit mappings to quantum hardware in %zu of %zu AQPE experiments and yielded a phase estimation error of %le.\n", outputVariables[0], convergenceCount, arguments.numberOfRepetitions, outputVariables[1]);
+		printf("\nIn %zu out of %zu converging experiments, the phase estimation error was greater than %d times the input precision %le.\n", wrongConvergenceCount, convergenceCount, (int) xSigmaValue, xSigmaValue * arguments.precision);
 	}
 
 	/*
 	 *	Verbose mode reminder.
 	 */
-	if ((!arguments.outputPipelineMode) && (!arguments.verbose))
+	if (!arguments.verbose)
 	{
 		printf("\nTo print details of all experiments, please run in verbose mode using the '-v' command-line argument option.\n");
 	}
@@ -399,13 +395,13 @@ main(int argc, char *  argv[])
 	/*
 	 *	Write output data if there is data.
 	 */
-	if (convergenceCount > 0)
+	if ((convergenceCount > 0) && (arguments.writeOutputToFile == true))
 	{
 		if (writeOutputDistributionsToCSV(arguments.outputFilePath, outputVariables, outputVariableNames, kNumberOfOutputDistributions))
 		{
-			return 1;
+			return kUtilityConstantsError;
 		}
 	}
 
-	return 0;
+	return kUtilityConstantsSuccess;
 }

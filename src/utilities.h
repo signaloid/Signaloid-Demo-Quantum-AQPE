@@ -36,16 +36,11 @@ typedef enum
 	kUtilityConstantsSuccess			= 0
 } UtilityConstants;
 
-/*
- *	outputPipelineMode is set to 0 if the '-o' option is provided as a command line argument, else it is set to 1.
- */
-extern int	outputPipelineMode;
-
 typedef struct CommandLineArguments
 {
 	char		inputFilePath[kUtilityConstantsMaxCharsPerFilepath];
 	char		outputFilePath[kUtilityConstantsMaxCharsPerFilepath];
-	bool		outputPipelineMode;
+	bool		writeOutputToFile;
 	double		targetPhi;
 	double		precision;
 	double		alpha;

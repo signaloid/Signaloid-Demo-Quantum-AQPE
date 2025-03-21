@@ -50,7 +50,7 @@ printUsage(void)
 	fprintf(stdout,
 		"[-s <K> <sample1> <sample2> ... <sampleK> <sampleWeight1> <sampleWeight2> ... <sampleWeightK>] (K in [%d, %d])\n"
 		"[-i [path_to_input_csv_file : str] (Default: '%s')]\n"
-		"[-o [path_to_output_csv_file : str] (Default: './sd0/aqpeOutput.csv')]\n"
+		"[-o <path_to_output_csv_file : str>]\n"
 		"[-t <target_phase : double in [-pi, pi]>] (Default: pi / 2)\n"
 		"[-p <precision_in_phase_estimation : double in [%"SignaloidParticleModifier"le, %"SignaloidParticleModifier"le]>] (Default: 1e-4)\n"
 		"[-a <alpha : double in [0,1]>] (Default: 0.5)\n"
@@ -184,8 +184,8 @@ getCommandLineArguments(
 			}
 			case 'o':
 			{
-				sprintf(arguments->outputFilePath, "./sd0/%s", optarg);
-				arguments->outputPipelineMode = false;
+				sprintf(arguments->outputFilePath, "%s", optarg);
+				arguments->writeOutputToFile = true;
 				break;
 			}
 			case 't':
@@ -308,12 +308,6 @@ getCommandLineArguments(
 						}
 						break;
 					}
-					case 'o':
-					{
-						snprintf(arguments->outputFilePath, kUtilityConstantsMaxCharsPerFilepath, "./sd0/aqpeOutput.csv");
-						arguments->outputPipelineMode = false;
-						break;
-					}
 					default:
 					{
 						fprintf(stderr, "Error: Option -%c is missing a required argument.\n", optopt);
@@ -358,18 +352,20 @@ getCommandLineArguments(
 		printf("In verbose mode!\n");
 	}
 	
-	if ((!arguments->outputPipelineMode))
+	printf("inputFilePath = %s\n", arguments->inputFilePath);
+
+	if (arguments->writeOutputToFile)
 	{
-		printf("inputFilePath = %s\n", arguments->inputFilePath);
 		printf("outputFilePath = %s\n", arguments->outputFilePath);
-		printf("targetPhi = %"SignaloidParticleModifier"lf\n", arguments->targetPhi);
-		printf("alpha = %"SignaloidParticleModifier"lf\n", arguments->alpha);
-		printf("precision = %"SignaloidParticleModifier"le\n", arguments->precision);
-		printf("numberOfEvidenceSamplesPerIteration = %"PRIu64"\n", arguments->numberOfEvidenceSamplesPerIteration);
-		printf("numberOfRepetitions = %zu\n", arguments->numberOfRepetitions);
-		printf("\nRequired Quantum Circuit Depth (D) = %"PRIu64"\n", (uint64_t) ceil(1 / pow(arguments->precision, arguments->alpha)));
-		printf("\nRequired Quantum Circuit Samples (N) = %"PRIu64"\n", (arguments->alpha == 1.0) ? (uint64_t) ceil(4 * log(1 / arguments->precision)) : (uint64_t) ceil((2 / (1 - arguments->alpha)) * (1 / pow(arguments->precision, 2 * (1 - arguments->alpha)) - 1)));
 	}
+
+	printf("targetPhi = %"SignaloidParticleModifier"lf\n", arguments->targetPhi);
+	printf("alpha = %"SignaloidParticleModifier"lf\n", arguments->alpha);
+	printf("precision = %"SignaloidParticleModifier"le\n", arguments->precision);
+	printf("numberOfEvidenceSamplesPerIteration = %"PRIu64"\n", arguments->numberOfEvidenceSamplesPerIteration);
+	printf("numberOfRepetitions = %zu\n", arguments->numberOfRepetitions);
+	printf("\nRequired Quantum Circuit Depth (D) = %"PRIu64"\n", (uint64_t) ceil(1 / pow(arguments->precision, arguments->alpha)));
+	printf("\nRequired Quantum Circuit Samples (N) = %"PRIu64"\n", (arguments->alpha == 1.0) ? (uint64_t) ceil(4 * log(1 / arguments->precision)) : (uint64_t) ceil((2 / (1 - arguments->alpha)) * (1 / pow(arguments->precision, 2 * (1 - arguments->alpha)) - 1)));
 
 	return kUtilityConstantsSuccess;
 }
